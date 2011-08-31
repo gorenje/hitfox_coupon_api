@@ -22,14 +22,33 @@ class TestHitfoxCouponApi < Test::Unit::TestCase
 
       mock.instance_of(HitfoxCouponApi::Configuration).generate_timestamp { '1314792296' }
       mock(RestClient).get(url,header) { '{ "status" : "banana" }'}
-      product = HitfoxCouponApi::Product.new("productidentiefer")
+
+      product = HitfoxCouponApi::Application.new("productidentiefer")
       hsh = product.coupon("abcdedfg-1234-jakl").used
 
       assert_equal "banana", hsh["status"]
     end
 
+    should "provide a shortcut application instanciation method" do
+      url = ("http://banana.com/one/coupon/abcdedfg-1234-jakl/used.json?"+
+             "hash=97c68554af339f1017155b1c4eb4cf3d14039bea")
+      header = {
+        "X-API-APP-ID"    => "productidentiefer",
+        "X-API-TIMESTAMP" => "1314792296",
+        "X-API-TOKEN"     => "1234"
+      }
+
+      mock.instance_of(HitfoxCouponApi::Configuration).generate_timestamp { '1314792296' }
+      mock(RestClient).get(url,header) { '{ "status" : "banana" }' }
+
+      hsh = HitfoxCouponApi.application("productidentiefer").
+        coupon("abcdedfg-1234-jakl").used
+
+      assert_equal "banana", hsh["status"]
+    end
+
     should "propagate exceptions" do
-      product = HitfoxCouponApi::Product.new("productidentiefer")
+      product = HitfoxCouponApi::Application.new("productidentiefer")
       mock(RestClient).get.with_any_args do
         raise RuntimeError, "no good"
       end

@@ -1,5 +1,5 @@
 module HitfoxCouponApi
-  class Product
+  class Application
     attr_reader :identifier
 
     def initialize(identifier)
