@@ -1,10 +1,11 @@
 # -*- mode: ruby -*-
 source "http://rubygems.org"
 
-gem 'rake', "= 0.8.7"
 gem 'rest-client'
+gem 'json'
 
 group :development do
+  gem 'rake', "= 0.8.7"
   gem 'pry'
   gem 'pry-doc'
   gem 'gist'

@@ -1,0 +1,49 @@
+#!/usr/bin/env ruby
+# -*- coding: utf-8 -*-
+# -*- ruby -*-
+
+require 'rubygems'
+require 'bundler'
+begin
+  Bundler.setup(:default, :development)
+rescue Bundler::BundlerError => e
+  $stderr.puts e.message
+  $stderr.puts "Run `bundle install` to install missing gems"
+  exit e.status_code
+end
+
+original_load_path = $LOAD_PATH
+dirs = ['ext', 'lib'].select { |dir| File.directory?(dir) }
+$LOAD_PATH.unshift(*dirs)
+
+require 'pry'
+require 'hitfox_coupon_api'
+
+test_login_details = File.join(File.dirname(__FILE__), 'test', '.login.yml')
+
+if File.exists?(test_login_details)
+  puts "✓ Found test configuration, setting up HitFox Coupon API configuration"
+  settings = YAML::load_file(test_login_details)
+  HitfoxCouponApi.configure do |config|
+    config.api_token    = settings["api_token"]
+    config.api_secret   = settings["api_secret"]
+    config.api_version  = settings["api_version"]
+    config.api_endpoint = settings["api_endpoint"]
+  end
+else
+  puts "✘ #{test_login_details} not found, unable to setup login details"
+  puts "✘ to do this yourself, do something like:"
+  puts(<<-EOF)
+    HitfoxCouponApi.configure do |config|
+      config.api_token    = 'your api token'
+      config.api_secret   = 'your api secret'
+      config.api_version  = 'the api version as provided by HitFox.com'
+      config.api_endpoint = 'the api endpoint as provided by HitFox.com'
+    end
+  EOF
+end
+
+Pry.editor = "emacs"
+Pry.start
+
+$LOAD_PATH.reject! { |path| !(original_load_path.include?(path)) }
