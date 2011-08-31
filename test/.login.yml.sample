@@ -1,0 +1,5 @@
+---
+api_token: 'your API token as provided by HitFox.com'
+api_secret: 'your secret as provided by HitFox.com'
+api_endpoint: https://hitfox.com
+api_version: one
