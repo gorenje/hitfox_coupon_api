@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{hitfox_coupon_api}
-  s.version = "0.0.0"
+  s.version = "0.0.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Gerrit Riessen"]
@@ -26,9 +26,9 @@ Gem::Specification.new do |s|
     "VERSION",
     "hitfox_coupon_api.gemspec",
     "lib/hitfox_coupon_api.rb",
+    "lib/hitfox_coupon_api/application.rb",
     "lib/hitfox_coupon_api/configuration.rb",
     "lib/hitfox_coupon_api/coupon.rb",
-    "lib/hitfox_coupon_api/product.rb",
     "test/.login.yml.sample",
     "test/helper.rb",
     "test/test_hitfox_coupon_api.rb",
