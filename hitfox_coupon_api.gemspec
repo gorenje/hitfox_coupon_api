@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Gerrit Riessen"]
-  s.date = "2011-08-31"
+  s.date = "2011-09-01"
   s.description = "Simple JSON interface to the HitFox coupon API"
   s.email = "gerrit.riessen@gmail.com"
   s.extra_rdoc_files = [
