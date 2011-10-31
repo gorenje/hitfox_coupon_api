@@ -1,8 +1,10 @@
 require 'rest-client'
 
 require 'hitfox_coupon_api/configuration'
+require 'hitfox_coupon_api/client'
 require 'hitfox_coupon_api/application'
 require 'hitfox_coupon_api/coupon'
+require 'hitfox_coupon_api/user'
 
 module HitfoxCouponApi
   extend self

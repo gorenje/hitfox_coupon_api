@@ -3,28 +3,22 @@ require 'digest/sha1'
 require 'json'
 
 module HitfoxCouponApi
-  class Coupon
-    def initialize(product, code)
-      @application, @code = product, code
+  class Coupon < Client
+    attr_accessor :code, :url
+
+    def initialize(product, code, url = nil)
+      @application, @code, @url = product, code, url
     end
 
     def used
-      config    = HitfoxCouponApi.configuration
-      timestamp = config.generate_timestamp
-      headers   = {
-        "X-API-TOKEN"     => config.api_token,
-        "X-API-APP-ID"    => @application.identifier,
-        "X-API-TIMESTAMP" => timestamp,
-      }
+      config, headers = HitfoxCouponApi.configuration, apiheaders
 
-      str = [ @code, config.api_token, timestamp, @application.identifier,
-              config.api_secret ].join(",")
+      hshstr = [ @code, config.api_token, headers["X-API-TIMESTAMP"],
+                 @application.identifier, config.api_secret ].join(",")
 
-      path = "/%s/coupon/%s/used.json?hash=%s" % [CGI.escape(config.api_version.to_s),
-                                                  CGI.escape(@code),
-                                                  CGI.escape(Digest::SHA1.hexdigest(str))]
-
-      JSON.parse(RestClient.get("%s%s" % [config.api_endpoint, path], headers))
+      params = [config.api_version.to_s, @code, Digest::SHA1.hexdigest(hshstr)]
+      urlstr = generate_url('/%s/coupon/%s/used.json?hash=%s', params)
+      JSON.parse(RestClient.get(urlstr, headers))
     end
   end
 end
