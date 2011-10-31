@@ -6,12 +6,12 @@ module HitfoxCouponApi
   class Coupon < Client
     attr_accessor :code, :url
 
-    def initialize(product, code, url = nil)
-      @application, @code, @url = product, code, url
+    def initialize(application, code, url = nil)
+      @application, @code, @url = application, code, url
     end
 
     def used
-      config, headers = HitfoxCouponApi.configuration, apiheaders
+      config, headers = configuration, apiheaders
 
       hshstr = [ @code, config.api_token, headers["X-API-TIMESTAMP"],
                  @application.identifier, config.api_secret ].join(",")

@@ -7,13 +7,12 @@ module HitfoxCouponApi
     end
 
     def buy_coupon(count = 1)
-      config, headers = HitfoxCouponApi.configuration, apiheaders
+      config, headers = configuration, apiheaders
 
-      hshstr = [ @user_id, config.api_token, headers["X-API-TIMESTAMP"],
-                 @application.identifier, config.api_secret ].join(",")
+      hshstr = [@user_id, config.api_token, headers["X-API-TIMESTAMP"],
+                @application.identifier, config.api_secret].join(",")
 
-      params = [config.api_version.to_s, @user_id, Digest::SHA1.hexdigest(hshstr),
-                count.to_s]
+      params = [config.api_version.to_s, @user_id, Digest::SHA1.hexdigest(hshstr), count.to_s]
       urlstr = generate_url('/%s/coupon/%s/buy.json?hash=%s&count=%s', params)
 
       res = JSON.parse(RestClient.get(urlstr, headers))
