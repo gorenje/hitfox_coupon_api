@@ -14,6 +14,10 @@ module HitfoxCouponApi
       User.new(self, user_id)
     end
 
+    def order(order_id)
+      Order.new(self, order_id)
+    end
+
     # Allow for an application specific configuration. This is internally
     # for having this functionality for several companies.
     def configuration

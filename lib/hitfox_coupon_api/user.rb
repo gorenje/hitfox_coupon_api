@@ -15,14 +15,7 @@ module HitfoxCouponApi
       params = [config.api_version.to_s, @user_id, Digest::SHA1.hexdigest(hshstr), count.to_s]
       urlstr = generate_url('/%s/coupon/%s/buy.json?hash=%s&count=%s', params)
 
-      res = JSON.parse(RestClient.get(urlstr, headers))
-      if res["status"] == 0
-        res["coupons"].map { |c| c[c.keys.first] }.map do |cc|
-          Coupon.new(@application, cc["code"], cc["download_url"])
-        end
-      else
-        raise HitfoxApiException, "#{res['status']}: #{res['msg']}"
-      end
+      handle_coupon_results(JSON.parse(RestClient.get(urlstr, headers)))
     end
   end
 end
