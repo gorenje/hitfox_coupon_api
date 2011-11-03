@@ -18,8 +18,8 @@ module HitfoxCouponApi
       Order.new(self, order_id)
     end
 
-    # Allow for an application specific configuration. This is internally
-    # for having this functionality for several companies.
+    # Allow an application to have a specific configuration. This allows
+    # one company to manage multiple products.
     def configuration
       @configuration
     end

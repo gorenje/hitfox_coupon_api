@@ -153,7 +153,69 @@ class TestHitfoxCouponApi < Test::Unit::TestCase
       end
     end
 
-    context "basics" do
+    context "coupon info" do
+      setup do
+        @url = ("http://banana.com/one/coupon/abcdedfg-1234-jakl/info.json?"+
+                "hash=97c68554af339f1017155b1c4eb4cf3d14039bea")
+        @header = {
+          "X-API-APP-ID"    => "productidentiefer",
+          "X-API-TIMESTAMP" => "1314792296",
+          "X-API-TOKEN"     => "1234"
+        }
+      end
+
+      should "work if status is zero" do
+        mock.instance_of(HitfoxCouponApi::Configuration).
+          generate_timestamp { '1314792296' }
+        jsonstr = {
+          :status => 0,
+          :coupons => [{"in_game_coupon" => {
+                           :code         => 'fubar',
+                           :download_url => "http://example.com?dd",
+                           :state        => 'all good',
+                           :app_id       => "1231121",
+                         }},
+                       {"fubar" => {
+                           :code         => 'snafu',
+                           :download_url => "http://example.com?dd/snahf",
+                           :state        => 'all bad',
+                           :app_id       => 12131412,
+                         }}]}.to_json
+        mock(RestClient).get(@url,@header) { jsonstr }
+
+        product = HitfoxCouponApi::Application.new("productidentiefer")
+
+        cpns = product.coupon("abcdedfg-1234-jakl").info
+        assert_equal 2, cpns.count
+
+        cpn = cpns.first
+        assert_equal "1231121", cpn.app_id
+        assert_equal "fubar", cpn.code
+        assert_equal "http://example.com?dd", cpn.url
+        assert_equal 'all good', cpn.state
+
+        cpn = cpns.last
+        assert_equal 12131412, cpn.app_id
+        assert_equal "http://example.com?dd/snahf", cpn.url
+        assert_equal 'all bad', cpn.state
+        assert_equal 'snafu', cpn.code
+      end
+
+      should "die if the status is not zero" do
+        mock.instance_of(HitfoxCouponApi::Configuration).
+          generate_timestamp { '1314792296' }
+        mock(RestClient).get(@url,@header) { '{ "status" : "banana" }'}
+
+        product = HitfoxCouponApi::Application.new("productidentiefer")
+
+        assert_raise HitfoxCouponApi::Client::HitfoxApiException do
+          product.coupon("abcdedfg-1234-jakl").info
+        end
+      end
+
+    end
+
+    context "coupon used" do
       setup do
         @url = ("http://banana.com/one/coupon/abcdedfg-1234-jakl/used.json?"+
                 "hash=97c68554af339f1017155b1c4eb4cf3d14039bea")
@@ -162,6 +224,22 @@ class TestHitfoxCouponApi < Test::Unit::TestCase
           "X-API-TIMESTAMP" => "1314792296",
           "X-API-TOKEN"     => "1234"
         }
+      end
+
+      should "have a bang variation for throwing exceptions" do
+        product = HitfoxCouponApi::Application.new("productidentiefer")
+        cpn = product.coupon("abcdedfg-1234-jakl")
+        mock(cpn).used { { "status" => 1 }}
+        assert_raise HitfoxCouponApi::Client::HitfoxApiException do
+          cpn.used!
+        end
+      end
+
+      should "have a bang variation for returning true" do
+        product = HitfoxCouponApi::Application.new("productidentiefer")
+        cpn = product.coupon("abcdedfg-1234-jakl")
+        mock(cpn).used { { "status" => 0 }}
+        assert cpn.used
       end
 
       should "generate the correct hash value" do

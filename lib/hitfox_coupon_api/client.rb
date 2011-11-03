@@ -22,7 +22,7 @@ module HitfoxCouponApi
     def handle_coupon_results(res)
       if res["status"] == 0
         res["coupons"].map { |c| c[c.keys.first] }.map do |cc|
-          Coupon.new(@application, cc["code"], cc["download_url"])
+          block_given? ? yield(cc) : Coupon.new(@application, cc["code"], cc["download_url"])
         end
       else
         raise HitfoxApiException, "#{res['status']}: #{res['msg']}"
