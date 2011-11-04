@@ -10,6 +10,22 @@ module HitfoxCouponApi
       @application, @code, @url = application, code, url
     end
 
+    def add(cpns_code)
+      config, headers = configuration, apiheaders
+
+      hshstr = [ cpns_code.count, config.api_token, headers["X-API-TIMESTAMP"],
+                 @application.identifier, config.api_secret ].join(",")
+
+      params = [config.api_version.to_s, Digest::SHA1.hexdigest(hshstr)]
+      urlstr = generate_url('/%s/coupons/create.json?hash=%s', params)
+      JSON.parse(RestClient.post(urlstr, { :coupons => cpns_code }, headers))
+    end
+
+    def add!(cpns_code)
+      res = add(cpns_code)
+      res["status"] == 0 ? true : raise(HitfoxApiException, "#{res['status']}: #{res['msg']}")
+    end
+
     def used
       config, headers = configuration, apiheaders
 

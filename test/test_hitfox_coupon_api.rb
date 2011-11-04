@@ -215,6 +215,69 @@ class TestHitfoxCouponApi < Test::Unit::TestCase
 
     end
 
+    context "coupon adding" do
+      setup do
+        @url = ("http://banana.com/one/coupons/create.json?"+
+                "hash=6f6e6aab956d49491b799daf4ed6f8cdadb3ee59")
+        @header = {
+          "X-API-APP-ID"    => "productidentiefer",
+          "X-API-TIMESTAMP" => "1314792296",
+          "X-API-TOKEN"     => "1234"
+        }
+      end
+
+      should "generate hash based on count" do
+        ary = [:one,:two,:three,:four]
+        mock.instance_of(HitfoxCouponApi::Configuration).
+          generate_timestamp { '1314792296' }
+        mock(RestClient).post(@url.gsub(/6f6e6aab956d49491b799daf4ed6f8cdadb3ee59/,
+                                        "b99ac8c4a3027c6bbe759cfc8179bd338bfd6e14"),
+                              { :coupons => ary}, @header) { '{ "status" : 1 }'}
+
+        HitfoxCouponApi::Application.new("productidentiefer").add_coupons(ary)
+      end
+
+      should "generate hash based on count not content of array" do
+        ary = [:oned,:twod,:dthree,:dfour]
+        mock.instance_of(HitfoxCouponApi::Configuration).
+          generate_timestamp { '1314792296' }
+        mock(RestClient).post(@url.gsub(/6f6e6aab956d49491b799daf4ed6f8cdadb3ee59/,
+                                        "b99ac8c4a3027c6bbe759cfc8179bd338bfd6e14"),
+                              { :coupons => ary}, @header) { '{ "status" : 1 }'}
+
+        HitfoxCouponApi::Application.new("productidentiefer").add_coupons(ary)
+      end
+
+      should "raise exception with bang" do
+        ary = [:one,:two,:three]
+        mock.instance_of(HitfoxCouponApi::Configuration).
+          generate_timestamp { '1314792296' }
+        mock(RestClient).post(@url, { :coupons => ary}, @header) { '{ "status" : 1 }'}
+
+        assert_raise HitfoxCouponApi::Client::HitfoxApiException do
+          HitfoxCouponApi::Application.new("productidentiefer").add_coupons!(ary)
+        end
+      end
+
+      should "work with bang also" do
+        ary = [:one,:two,:three]
+        mock.instance_of(HitfoxCouponApi::Configuration).
+          generate_timestamp { '1314792296' }
+        mock(RestClient).post(@url, { :coupons => ary}, @header) { '{ "status" : 0 }'}
+
+        HitfoxCouponApi::Application.new("productidentiefer").add_coupons!(ary)
+      end
+
+      should "work" do
+        ary = [:one,:two,:three]
+        mock.instance_of(HitfoxCouponApi::Configuration).
+          generate_timestamp { '1314792296' }
+        mock(RestClient).post(@url, { :coupons => ary}, @header) { '{ "status" : 0 }'}
+
+        HitfoxCouponApi::Application.new("productidentiefer").add_coupons(ary)
+      end
+    end
+
     context "coupon used" do
       setup do
         @url = ("http://banana.com/one/coupon/abcdedfg-1234-jakl/used.json?"+

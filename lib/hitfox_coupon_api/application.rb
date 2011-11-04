@@ -18,6 +18,18 @@ module HitfoxCouponApi
       Order.new(self, order_id)
     end
 
+    # take an array of coupon details and create deal coupons. The array is assumed to be
+    # structured as: [type, code, type, code, link, type, code, type, code, ... etc]
+    # where type is one of: :actlink (2 args), :ingame (1 arg), :url (1 arg), e.g.
+    #    [:actlink, code, link, :ingame, code, :url, link, :ingame, code, ....]
+    # would a valid array.
+    def add_coupons(cpns_code)
+      Coupon.new(self,nil).add(cpns_code)
+    end
+    def add_coupons!(cpns_code)
+      Coupon.new(self,nil).add!(cpns_code)
+    end
+
     # Allow an application to have a specific configuration. This allows
     # one company to manage multiple products.
     def configuration
