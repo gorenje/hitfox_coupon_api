@@ -18,6 +18,11 @@ module HitfoxCouponApi
       Order.new(self, order_id)
     end
 
+    # return the true/false if count coupons are available for the application
+    def available?(count = 1)
+      Coupon.new(self,nil).available?(count)
+    end
+
     # take an array of coupon details and create deal coupons. The array is assumed to be
     # structured as: [type, code, type, code, link, type, code, type, code, ... etc]
     # where type is one of: :actlink (2 args), :ingame (1 arg), :url (1 arg), e.g.
