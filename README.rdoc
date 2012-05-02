@@ -1,3 +1,5 @@
+{<img src="https://secure.travis-ci.org/gorenje/hitfox_coupon_api.png" />}[http://travis-ci.org/gorenje/hitfox_coupon_api]
+
 = hitfox_coupon_api
 
 Simple interface to the HitFox.com coupon API. Audience of this gem are publisher who have
